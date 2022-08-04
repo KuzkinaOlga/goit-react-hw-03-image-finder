@@ -14,6 +14,8 @@ class App extends Component {
     isPending: false,
     isOpenModal: false,
     imageData: null,
+    per_page: 12,
+    isVisible: false,
   };
   componentDidUpdate(prevProps, prevState) {
     const { query, page } = this.state;
@@ -23,6 +25,7 @@ class App extends Component {
         .then(data => {
           this.setState(prevState => ({
             images: [...prevState.images, ...data.hits],
+            isVisible: page < Math.ceil(data.total / this.state.per_page),
           }));
         })
         .catch(error => console.error(error))
@@ -71,8 +74,8 @@ class App extends Component {
           status={status}
         />
         {this.state.isPending && <Loader color={'#3f51b5'} />}
-        {query.length === 0 && <h2>Sorry. There are no images ...</h2>}
-        {query.length !== 0 && <Button onClick={loadMore} />}
+        {images.length <= 0 && <h2>Sorry. There are no images ...</h2>}
+        {this.state.isVisible && <Button type="button" onClick={loadMore} />}
         {this.state.isOpenModal && (
           <Modal closeModal={closeModal} image={imageData} />
         )}
